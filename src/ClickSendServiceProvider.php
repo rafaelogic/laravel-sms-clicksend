@@ -4,7 +4,7 @@ namespace NotificationChannels\ClickSend;
 
 use ClickSend\Api\SMSApi;
 use ClickSend\Configuration;
-use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Client;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,7 +24,7 @@ class ClickSendServiceProvider extends ServiceProvider {
                                           ->setUsername( $config['username'] )
                                           ->setPassword( $config['api_key'] );
 
-            return new SMSApi( $app->make( ClientInterface::class ), $configuration );
+            return new SMSApi( new Client(), $configuration );
         } );
 
         $this->app->singleton( ClickSendApi::class, function ( Application $app ) {
