@@ -2,10 +2,13 @@
 
 namespace NotificationChannels\ClickSend;
 
+use ClickSend\Api\SMSApi;
+use ClickSend\Configuration;
+use GuzzleHttp\ClientInterface;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 
-class ClickSendServiceProvider extends ServiceProvider
-{
+class ClickSendServiceProvider extends ServiceProvider {
     /**
      * Indicates if loading of the provider is deferred.
      *
@@ -13,14 +16,22 @@ class ClickSendServiceProvider extends ServiceProvider
      */
     protected $defer = true;
 
-    public function register()
-    {
-        $this->app->singleton(ClickSendApi::class, function () {
+    public function register() {
+        $this->app->singleton( SMSApi::class, function ( Application $app ) {
+            $config = array_get( $app['config'], 'services.clicksend' );
 
-            $config = config('services.clicksend');
+            $configuration = Configuration::getDefaultConfiguration()
+                                          ->setUsername( $config['username'] )
+                                          ->setPassword( $config['api_key'] );
 
-            return new ClickSendApi($config['username'], $config['api_key'], $config['sms_from']);
-        });
+            return new SMSApi( $app->make( ClientInterface::class ), $configuration );
+        } );
+
+        $this->app->singleton( ClickSendApi::class, function ( Application $app ) {
+            $config = array_get( $app['config'], 'services.clicksend' );
+
+            return new ClickSendApi( $app->make( SMSApi::class ), $config['sms_from'] );
+        } );
     }
 
     /**
@@ -28,8 +39,7 @@ class ClickSendServiceProvider extends ServiceProvider
      *
      * @return array
      */
-    public function provides()
-    {
-        return [ClickSendApi::class];
+    public function provides() {
+        return [ ClickSendApi::class ];
     }
 }

@@ -2,63 +2,87 @@
 
 namespace NotificationChannels\ClickSend;
 
-class ClickSendMessage
-{
+class ClickSendMessage {
     /**
      * The phone number the message should be sent from.
      *
      * @var string
      */
-    public $from = '';
+    private $from;
+
+    /**
+     * @var string
+     */
+    private $to;
 
     /**
      * The message content.
      *
      * @var string
      */
-    public $content = '';
+    private $content = '';
 
     /**
-     * Create a new message instance.
-     *
-     * @param  string $content
-     * @return static
+     * @param string      $to
+     * @param  string     $content
+     * @param null|string $from
      */
-    public static function create($content = '')
-    {
-        return new static($content);
+    public function __construct( string $to, string $content, ?string $from = null ) {
+        $this->to      = $to;
+        $this->content = $content;
+        $this->from    = $from;
     }
 
     /**
-     * @param  string  $content
+     * @return string
      */
-    public function __construct($content = '')
-    {
-        $this->content = $content;
+    public function getFrom(): ?string {
+        return $this->from;
     }
 
     /**
-     * Set the message content.
+     * @param string $from
      *
-     * @param  string  $content
-     * @return $this
+     * @return ClickSendMessage
      */
-    public function content($content)
-    {
-        $this->content = $content;
+    public function setFrom( string $from ): ClickSendMessage {
+        $this->from = $from;
 
         return $this;
     }
 
     /**
-     * Set the phone number or sender name the message should be sent from.
-     *
-     * @param  string  $from
-     * @return $this
+     * @return string
      */
-    public function from($from)
-    {
-        $this->from = $from;
+    public function getTo(): string {
+        return $this->to;
+    }
+
+    /**
+     * @param string $to
+     *
+     * @return ClickSendMessage
+     */
+    public function setTo( string $to ): ClickSendMessage {
+        $this->to = $to;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContent(): string {
+        return $this->content;
+    }
+
+    /**
+     * @param string $content
+     *
+     * @return ClickSendMessage
+     */
+    public function setContent( string $content ): ClickSendMessage {
+        $this->content = $content;
 
         return $this;
     }

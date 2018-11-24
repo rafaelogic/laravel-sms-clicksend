@@ -7,92 +7,71 @@
 
 namespace NotificationChannels\ClickSend;
 
+use ClickSend\Api\SMSApi;
+use ClickSend\ApiException;
+use ClickSend\Model\SmsMessage;
+use ClickSend\Model\SmsMessageCollection;
 use NotificationChannels\ClickSend\Exceptions\CouldNotSendNotification;
 
-use ClickSendLib\ClickSendClient;
-use ClickSendLib\APIException;
-
-
-class ClickSendApi
-{
-    /** @var ClickSendClient client */
-    protected $client;
-
-    /** @var string */
-    protected $username;
-
-    /** @var string */
-    protected $api_key;
+class ClickSendApi {
+    /**
+     * @var SMSApi
+     */
+    private $api;
 
     /** @var string - default from config */
     protected $sms_from;
 
-
-    public function __construct($username, $api_key, $sms_from)
-    {
-        $this->username = $username;
-        $this->api_key  = $api_key;
+    /**
+     * ClickSendApi constructor.
+     *
+     * @param SMSApi $api
+     * @param        $sms_from
+     */
+    public function __construct( SMSApi $api, $sms_from ) {
+        $this->api      = $api;
         $this->sms_from = $sms_from;
-
-        // Prepare ClickSend client
-        try {
-            $this->client = new ClickSendClient($username, $api_key);
-        }
-        catch(APIException $exception) {
-            throw CouldNotSendNotification::couldNotCommunicateWithClicksend($exception);
-        }
-
-        // Client may get instances e.g. getSms(), getVoice(), getAccount(), getCountries() .....
-        // $this->client->getSMS();
     }
 
     /**
-     * @param $from
-     * @param $to
-     * @param $message
+     * @param ClickSendMessage $message
+     *
      * @return array
+     * @throws CouldNotSendNotification
      */
-    public function sendSms($from, $to, $message)
-    {
-        // The payload may have more messages but we use just one at a time
-        $payload = ['messages' => [
-            [
-                "from"  => $from ?: $this->sms_from,
-                "to"    => $to,
-                "body"  => $message,
-            ]
-        ]];
+    public function sendSms( ClickSendMessage $message ) {
+        $data = [
+            'from' => $message->getFrom() ?? $this->sms_from,
+            'to'   => $message->getTo(),
+            'body' => $message->getContent(),
+        ];
+
+        $payload = new SmsMessageCollection( [ 'messages' => [ new SmsMessage( $data ) ] ] );
 
         $result = [
             'success' => false,
             'message' => '',
-            'data'    => $payload['messages'][0],
+            'data'    => $data,
         ];
 
         try {
-            $response = $this->client->getSMS()->sendSms($payload);
+            $response = json_decode( $this->api->smsSendPost( $payload ), true );
 
-            // communication error
-            if($response->response_code != 'SUCCESS') {
-                $result['message'] = $response->response_code;
-            }
-            // sending error
-            elseif ($response->data->messages[0]->status != 'SUCCESS') {
-                $result['message'] = $response->data->messages[0]->status;
-            }
-            else {
+            if ( $response['response_code'] != 'SUCCESS' ) {
+                // communication error
+                throw CouldNotSendNotification::clickSendErrorMessage( $response['response_msg'] );
+            } else if ( array_get( $response, 'data.messages.0.status' ) != 'SUCCESS' ) {
+                // sending error
+                throw CouldNotSendNotification::clickSendErrorMessage( array_get( $response, 'data.messages.0.status' ) );
+            } else {
                 $result['success'] = true;
                 $result['message'] = 'Message sent successfully.';
             }
 
-        }
-        // clicksend API error
-        catch (APIException $exception) {
-            $result['message'] = $exception->getReason();
-        }
-        // any php error
-        catch (\Exception $exception) {
-            $result['message'] = $exception->getMessage();
+        } catch ( APIException $e ) {
+            throw CouldNotSendNotification::clickSendApiException( $e );
+        } catch ( \Throwable $e ) {
+            throw CouldNotSendNotification::genericError( $e );
         }
 
         return $result;
@@ -102,11 +81,10 @@ class ClickSendApi
     /**
      * Return Client for accessing all other api functions
      *
-     * @return ClickSendClient
+     * @return SMSApi
      */
-    public function getClient()
-    {
-        return $this->client;
+    public function getClient() {
+        return $this->api;
     }
 
 }

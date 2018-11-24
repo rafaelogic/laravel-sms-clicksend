@@ -2,46 +2,70 @@
 
 namespace NotificationChannels\ClickSend\Exceptions;
 
-use Exception;
-use DomainException;
+use ClickSend\ApiException;
 
-class CouldNotSendNotification extends Exception
-{
+class CouldNotSendNotification extends \Exception {
     /**
      * Thrown when content length is greater than 800 characters.
      *
      * @return static
      */
-    public static function contentLengthLimitExceeded()
-    {
+    public static function contentLengthLimitExceeded() {
         return new static(
             'Notification was not sent. Content length may not be greater than 800 characters.'
         );
     }
 
     /**
-     * Thrown when mesage status is not SUCCESS
-     *
-     * @param  DomainException  $exception
-     *
-     * @return static
+     * @return CouldNotSendNotification
      */
-    public static function clicksendRespondedWithAnError(DomainException $exception)
-    {
-        return new static(
-            "Notification Error: {$exception->getMessage()}"
-        );
+    public static function missingRecipient() {
+        return static::notificationError( 'Missing recipient.' );
     }
 
     /**
-     * Thrown when we're unable to communicate with Clicksend.com
+     * ClickSend returned an error message.
      *
-     * @param  Exception  $exception
+     * @param string $message
+     *
+     * @return CouldNotSendNotification
+     */
+    public static function clickSendErrorMessage( ?string $message ) {
+        return static::notificationError( $message ?? 'No message.' );
+    }
+
+    /**
+     * Thrown when mesage status is not SUCCESS
+     *
+     * @param ApiException $e
      *
      * @return static
      */
-    public static function couldNotCommunicateWithClicksend(Exception $exception)
-    {
-        return new static("Notification Gateway Error: {$exception->getReason()} [{$exception->getCode()}]");
+    public static function clickSendApiException( ApiException $e ) {
+        return static::notificationError( $e->getMessage() );
+    }
+
+    /**
+     * @param \Throwable $e
+     *
+     * @return CouldNotSendNotification
+     */
+    public static function genericError( \Throwable $e ) {
+        return new static( sprintf(
+            'Generic Error: %s',
+            $e->getMessage()
+        ) );
+    }
+
+    /**
+     * @param string $error
+     *
+     * @return CouldNotSendNotification
+     */
+    public static function notificationError( string $error ) {
+        return new static( sprintf(
+            'Notification Error: %s',
+            $error
+        ) );
     }
 }
