@@ -25,7 +25,7 @@ class ClickSendChannelTest extends MockeryTestCase {
      */
     private $channel;
 
-    public function setUp() {
+    public function setUp(): void {
         parent::setUp();
 
         $app = new Container();
