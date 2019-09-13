@@ -5,6 +5,7 @@ namespace NotificationChannel\ClickSend\Tests;
 use ClickSend\Api\SMSApi;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Container\Container;
+use Illuminate\Config\Repository;
 use Mockery;
 use Illuminate\Notifications\Notification;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -33,10 +34,13 @@ class ClickSendChannelTest extends MockeryTestCase {
         $app->singleton( 'events', function ( $app ) {
             return new Dispatcher( $app );
         } );
+        $app->singleton( 'config', function ( $app ) {
+            return new Repository( ['clicksend.enabled' => true] );
+        } );
 
         $api           = Mockery::mock( SMSApi::class );
         $this->api     = Mockery::mock( ClickSendApi::class, [ $api, 'from' ] );
-        $this->channel = new ClickSendChannel( $this->api, $app->make( 'events' ) );
+        $this->channel = new ClickSendChannel( $this->api, $app->make( 'events' ), $app->make( 'config' ) );
     }
 
     /**
