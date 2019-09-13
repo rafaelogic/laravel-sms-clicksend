@@ -3,10 +3,10 @@
 namespace NotificationChannels\ClickSend;
 
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Events\NotificationFailed;
 use NotificationChannels\ClickSend\Exceptions\CouldNotSendNotification;
-
 
 class ClickSendChannel {
     /** @var \NotificationChannels\ClickSend\ClickSendApi */
@@ -16,14 +16,21 @@ class ClickSendChannel {
     protected $events;
 
     /**
+     * @var bool
+     */
+    protected $enabled;
+
+    /**
      * ClickSendChannel constructor.
      *
      * @param ClickSendApi $client
-     * @param Dispatcher   $events
+     * @param Dispatcher $events
+     * @param $config
      */
-    public function __construct( ClickSendApi $client, Dispatcher $events ) {
+    public function __construct( ClickSendApi $client, Dispatcher $events, Repository $config ) {
         $this->client = $client;
         $this->events = $events;
+        $this->enabled = $config['clicksend.enabled'];
     }
 
     /**
@@ -34,6 +41,10 @@ class ClickSendChannel {
      * @throws CouldNotSendNotification
      */
     public function send( $notifiable, Notification $notification ) {
+        if (! $this->enabled) {
+            return [];
+        }
+
         $to = $notifiable->routeNotificationForClicksend();
 
         if ( !$to ) {

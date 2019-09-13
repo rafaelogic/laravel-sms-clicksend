@@ -16,21 +16,26 @@ class ClickSendServiceProvider extends ServiceProvider {
      */
     protected $defer = true;
 
+    public function boot()
+    {
+        $this->publishes([
+            __DIR__.'/../config/clicksend.php' => config_path('clicksend.php'),
+        ], 'config');
+
+        $this->mergeConfigFrom(__DIR__.'/../config/clicksend.php', 'clicksend');
+    }
+
     public function register() {
         $this->app->singleton( SMSApi::class, function ( Application $app ) {
-            $config = array_get( $app['config'], 'services.clicksend' );
-
             $configuration = Configuration::getDefaultConfiguration()
-                                          ->setUsername( $config['username'] )
-                                          ->setPassword( $config['api_key'] );
+                                          ->setUsername( $this->app['config']['clicksend.user_name'] )
+                                          ->setPassword( $this->app['config']['clicksend.api_key'] );
 
             return new SMSApi( new Client(), $configuration );
         } );
 
         $this->app->singleton( ClickSendApi::class, function ( Application $app ) {
-            $config = array_get( $app['config'], 'services.clicksend' );
-
-            return new ClickSendApi( $app->make( SMSApi::class ), $config['sms_from'] );
+            return new ClickSendApi( $app->make( SMSApi::class ), $this->app['config']['clicksend.sms_from'] );
         } );
     }
 

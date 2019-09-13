@@ -60,9 +60,9 @@ class ClickSendApi {
             if ( $response['response_code'] != 'SUCCESS' ) {
                 // communication error
                 throw CouldNotSendNotification::clickSendErrorMessage( $response['response_msg'] );
-            } else if ( array_get( $response, 'data.messages.0.status' ) != 'SUCCESS' ) {
+            } else if ( \Arr::get( $response, 'data.messages.0.status' ) != 'SUCCESS' ) {
                 // sending error
-                throw CouldNotSendNotification::clickSendErrorMessage( array_get( $response, 'data.messages.0.status' ) );
+                throw CouldNotSendNotification::clickSendErrorMessage( \Arr::get( $response, 'data.messages.0.status' ) );
             } else {
                 $result['success'] = true;
                 $result['message'] = 'Message sent successfully.';

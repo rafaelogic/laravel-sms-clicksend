@@ -34,7 +34,7 @@ class ClickSendChannelTest extends MockeryTestCase {
         $app->singleton( 'events', function ( $app ) {
             return new Dispatcher( $app );
         } );
-        $app->singleton( 'config', function ( $app ) {
+        $app->singleton( 'config', function () {
             return new Repository( ['clicksend.enabled' => true] );
         } );
 
