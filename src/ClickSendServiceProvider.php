@@ -16,6 +16,9 @@ class ClickSendServiceProvider extends ServiceProvider {
      */
     protected $defer = true;
 
+    /**
+     *
+     */
     public function boot()
     {
         $this->publishes([
@@ -28,17 +31,23 @@ class ClickSendServiceProvider extends ServiceProvider {
         );
     }
 
-    public function register() {
-        $this->app->singleton( SMSApi::class, function ( Application $app ) {
-            $configuration = Configuration::getDefaultConfiguration()
-                                          ->setUsername( $this->app['config']['clicksend.user_name'] )
-                                          ->setPassword( $this->app['config']['clicksend.api_key'] );
+    /**
+     * @throws \Exception
+     */
+    public function register()
+    {
+        $this->checkConfig();
 
-            return new SMSApi( new Client(), $configuration );
+        $this->app->singleton(SMSApi::class, function () {
+            $configuration = Configuration::getDefaultConfiguration()
+                                          ->setUsername($this->app['config']['clicksend.user_name'])
+                                          ->setPassword($this->app['config']['clicksend.api_key']);
+
+            return new SMSApi(new Client(), $configuration);
         } );
 
-        $this->app->singleton( ClickSendApi::class, function ( Application $app ) {
-            return new ClickSendApi( $app->make( SMSApi::class ), $this->app['config']['clicksend.sms_from'] );
+        $this->app->singleton( ClickSendApi::class, function (Application $app) {
+            return new ClickSendApi($app->make(SMSApi::class), $this->app['config']['clicksend.sms_from']);
         } );
     }
 
@@ -47,7 +56,22 @@ class ClickSendServiceProvider extends ServiceProvider {
      *
      * @return array
      */
-    public function provides() {
-        return [ ClickSendApi::class ];
+    public function provides()
+    {
+        return [ClickSendApi::class];
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function checkConfig(): void
+    {
+        if (! isset($this->app['config']['clicksend.user_name']) || empty($this->app['config']['clicksend.user_name'])) {
+            throw new \Exception('CLICKSEND_ENABLED is missing or blank');
+        }
+
+        if (! isset($this->app['config']['clicksend.api_key']) || empty($this->app['config']['clicksend.api_key'])) {
+            throw new \Exception('CLICKSEND_API_KEY is missing or blank');
+        }
     }
 }

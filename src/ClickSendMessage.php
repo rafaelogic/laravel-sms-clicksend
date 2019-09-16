@@ -27,7 +27,8 @@ class ClickSendMessage {
      * @param  string     $content
      * @param null|string $from
      */
-    public function __construct( string $to, string $content, ?string $from = null ) {
+    public function __construct(string $to, string $content, ?string $from = null)
+    {
         $this->to      = $to;
         $this->content = $content;
         $this->from    = $from;
@@ -36,7 +37,8 @@ class ClickSendMessage {
     /**
      * @return string
      */
-    public function getFrom(): ?string {
+    public function getFrom(): ?string
+    {
         return $this->from;
     }
 
@@ -45,7 +47,8 @@ class ClickSendMessage {
      *
      * @return ClickSendMessage
      */
-    public function setFrom(string $from): ClickSendMessage {
+    public function setFrom(string $from): ClickSendMessage
+    {
         $this->from = $from;
 
         return $this;
@@ -63,7 +66,8 @@ class ClickSendMessage {
      *
      * @return ClickSendMessage
      */
-    public function setTo(string $to): ClickSendMessage {
+    public function setTo(string $to): ClickSendMessage
+    {
         $this->to = $to;
 
         return $this;
@@ -72,7 +76,8 @@ class ClickSendMessage {
     /**
      * @return string
      */
-    public function getContent(): string {
+    public function getContent(): string
+    {
         return $this->content;
     }
 
@@ -81,7 +86,8 @@ class ClickSendMessage {
      *
      * @return ClickSendMessage
      */
-    public function setContent(string $content): ClickSendMessage {
+    public function setContent(string $content): ClickSendMessage
+    {
         $this->content = $content;
 
         return $this;

@@ -36,7 +36,8 @@ class ClickSendChannel {
      * @param Dispatcher $events
      * @param $config
      */
-    public function __construct(ClickSendApi $client, Dispatcher $events, Repository $config) {
+    public function __construct(ClickSendApi $client, Dispatcher $events, Repository $config)
+    {
         $this->client = $client;
         $this->events = $events;
         $this->enabled = $config['clicksend.enabled'];
@@ -50,7 +51,8 @@ class ClickSendChannel {
      * @return array|mixed
      * @throws CouldNotSendNotification
      */
-    public function send($notifiable, Notification $notification) {
+    public function send($notifiable, Notification $notification)
+    {
         if (! $this->enabled) {
             return [];
         }

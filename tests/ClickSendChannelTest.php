@@ -26,7 +26,8 @@ class ClickSendChannelTest extends MockeryTestCase {
      */
     private $channel;
 
-    public function setUp(): void {
+    public function setUp(): void
+    {
         parent::setUp();
 
         $app = new Container();
@@ -49,7 +50,8 @@ class ClickSendChannelTest extends MockeryTestCase {
     /**
      * @throws CouldNotSendNotification
      */
-    public function testChannelCallsApi() {
+    public function testChannelCallsApi()
+    {
         $this->expectException(CouldNotSendNotification::class);
 
         $this->api->shouldReceive('sendSms')
@@ -68,7 +70,8 @@ class ClickSendChannelTest extends MockeryTestCase {
     /**
      * @throws CouldNotSendNotification
      */
-    public function testDoesNotSendSmsWhenMissingRecipient() {
+    public function testDoesNotSendSmsWhenMissingRecipient()
+    {
         $this->expectException(CouldNotSendNotification::class);
 
         $this->api->shouldReceive('sendSms')
@@ -101,19 +104,22 @@ class ClickSendChannelTest extends MockeryTestCase {
 }
 
 class TestNotifiable {
-    public function routeNotificationForClicksend() {
+    public function routeNotificationForClicksend()
+    {
         return '+1234567890';
     }
 }
 
 class TestNotifiableWithoutRouteNotificationFor extends TestNotifiable {
-    public function routeNotificationFor() {
+    public function routeNotificationFor()
+    {
         return false;
     }
 }
 
 class TestNotification extends Notification {
-    public function toClickSend() {
+    public function toClickSend()
+    {
         return new ClickSendMessage('to', 'message', 'from');
     }
 }

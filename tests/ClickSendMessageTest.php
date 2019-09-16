@@ -6,7 +6,8 @@ use NotificationChannels\ClickSend\ClickSendMessage;
 use PHPUnit\Framework\TestCase;
 
 class ClickSendMessageTest extends TestCase {
-    public function testCreateInstance() {
+    public function testCreateInstance()
+    {
         $message = new ClickSendMessage('to', 'message', 'from');
 
         $this->assertEquals('to', $message->getTo());
@@ -14,7 +15,8 @@ class ClickSendMessageTest extends TestCase {
         $this->assertEquals('from', $message->getFrom());
     }
 
-    public function testFromArgumentIsOptional() {
+    public function testFromArgumentIsOptional()
+    {
         $message = new ClickSendMessage('to', 'message');
 
         $this->assertEquals('to', $message->getTo());

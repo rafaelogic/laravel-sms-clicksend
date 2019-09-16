@@ -1,9 +1,5 @@
 <?php
-/**
- * Click Send API using ClickSend API wrapper
- *
- * @url https://github.com/ClickSend/clicksend-php
- */
+
 
 namespace NotificationChannels\ClickSend;
 
@@ -13,6 +9,12 @@ use ClickSend\Model\SmsMessage;
 use ClickSend\Model\SmsMessageCollection;
 use NotificationChannels\ClickSend\Exceptions\CouldNotSendNotification;
 
+
+/**
+ * Click Send API using ClickSend API wrapper
+ *
+ * @url https://github.com/ClickSend/clicksend-php
+ */
 class ClickSendApi {
     /**
      * @var SMSApi
@@ -30,7 +32,8 @@ class ClickSendApi {
      * @param SMSApi $api
      * @param        $sms_from
      */
-    public function __construct( SMSApi $api, $sms_from ) {
+    public function __construct(SMSApi $api, $sms_from)
+    {
         $this->api      = $api;
         $this->sms_from = $sms_from;
     }
@@ -40,7 +43,8 @@ class ClickSendApi {
      * @return array
      * @throws CouldNotSendNotification
      */
-    public function sendSms(ClickSendMessage $message) {
+    public function sendSms(ClickSendMessage $message)
+    {
         $data = [
             'from' => $message->getFrom() ?? $this->sms_from,
             'to'   => $message->getTo(),
@@ -84,7 +88,8 @@ class ClickSendApi {
      *
      * @return SMSApi
      */
-    public function getClient() {
+    public function getClient()
+    {
         return $this->api;
     }
 
