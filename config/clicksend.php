@@ -19,7 +19,7 @@ return [
     /**
      * ClickSend Send From
      */
-    'sms_from'  => env('CLICKSEND_SMS_FROM'),
+    'sms_from'  => env('CLICKSEND_SMS_FROM', ''),
 
     /**
      * ClickSend enforced prefix

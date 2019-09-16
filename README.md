@@ -20,7 +20,7 @@ Uses ClickSend PHP API wrapper [https://github.com/ClickSend/clicksend-php]
 
 Install the package via composer:
 ```bash
-composer require deshack/laravel-sms-clicksend
+composer require cca-bheath/laravel-sms-clicksend
 ```
 
 Add the service provider to `config/app.php`:
@@ -33,16 +33,10 @@ Add the service provider to `config/app.php`:
 ...
 ```
 
-Add your ClickSend username, api_key and optional default sender sms_from to your `config/services.php`:
+Publish the clicksend config file `config/clicksend.php`:
 
 ```php
-...
-'clicksend' => [
-	'username' => env('CLICKSEND_USERNAME'),
-	'api_key'  => env('CLICKSEND_API_KEY'),
-	'sms_from' => env('CLICKSEND_SMS_FROM'), // optional
-],
-...
+php artisan vendor:publish --provider="NotificationChannels\ClickSend\ClickSendServiceProvider" --tag="config"
 ```
 
 ## Usage
@@ -78,12 +72,6 @@ class ClickSendTest extends Notification
 
     public function toClickSend($notifiable)
     {
-        // statically create message object:
-        
-        $message = ClickSendMessage::create("SMS test to user #{$notifiable->id} with token {$this->token} by ClickSend");
-        
-        // OR instantiate:
-        
         $message = new ClickSendMessage("SMS test to user #{$notifiable->id} with token {$this->token} by ClickSend");
         
        	// available methods:
@@ -216,6 +204,24 @@ $account =  $client->getAccount()->getAccount();
 $countries =  $client->getCountries()->getCountries();
 
 ```
+
+## Config
+
+- `CLICKSEND_ENABLED` 
+    - If set to false the channel will not run and return true.  This is good for testing
+- `CLICKSEND_USERNAME`
+    - Username on ClickSend
+    - You can see this information by click on the API Credentials link at the top of the dashboard
+- `CLICKSEND_API_KEY`
+    - API Key on ClickSend
+    - You can see this information by click on the API Credentials link at the top of the dashboard
+- `CLICKSEND_SMS_FROM`
+    - Override the FROM on SMS and MMS messages
+    - Can leave blank
+- `CLICKSEND_PREFIX`
+    - Enforce that all `to` have this prefix
+    - For example +1
+    - This should only be used if you are sure that **_all_** `to` **_must_** have this prefix
 
 ## Changelog
 
