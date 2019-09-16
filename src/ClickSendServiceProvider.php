@@ -36,8 +36,6 @@ class ClickSendServiceProvider extends ServiceProvider {
      */
     public function register()
     {
-        $this->checkConfig();
-
         $this->app->singleton(SMSApi::class, function () {
             $configuration = Configuration::getDefaultConfiguration()
                                           ->setUsername($this->app['config']['clicksend.user_name'])
@@ -59,19 +57,5 @@ class ClickSendServiceProvider extends ServiceProvider {
     public function provides()
     {
         return [ClickSendApi::class];
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function checkConfig(): void
-    {
-        if (! isset($this->app['config']['clicksend.user_name']) || empty($this->app['config']['clicksend.user_name'])) {
-            throw new \Exception('CLICKSEND_ENABLED is missing or blank');
-        }
-
-        if (! isset($this->app['config']['clicksend.api_key']) || empty($this->app['config']['clicksend.api_key'])) {
-            throw new \Exception('CLICKSEND_API_KEY is missing or blank');
-        }
     }
 }

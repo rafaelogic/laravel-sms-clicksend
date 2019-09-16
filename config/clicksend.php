@@ -9,12 +9,12 @@ return [
     /**
      * ClickSend username
      */
-    'user_name' => env('CLICKSEND_USERNAME'),
+    'user_name' => env('CLICKSEND_USERNAME', ''),
 
     /**
      * ClickSend API Key
      */
-    'api_key'   => env('CLICKSEND_API_KEY'),
+    'api_key'   => env('CLICKSEND_API_KEY', ''),
 
     /**
      * ClickSend Send From
