@@ -21,6 +21,11 @@ class ClickSendChannel {
     protected $enabled;
 
     /**
+     * @var string
+     */
+    public $prefix;
+
+    /**
      * ClickSendChannel constructor.
      *
      * @param ClickSendApi $client
@@ -31,6 +36,7 @@ class ClickSendChannel {
         $this->client = $client;
         $this->events = $events;
         $this->enabled = $config['clicksend.enabled'];
+        $this->prefix = $config['clicksend.prefix'];
     }
 
     /**
@@ -50,6 +56,8 @@ class ClickSendChannel {
         if ( !$to ) {
             throw CouldNotSendNotification::missingRecipient();
         }
+
+        $to = $this->checkPrefix($to);
 
         /** @noinspection PhpUndefinedMethodInspection */
         $message = $notification->toClickSend( $notifiable );
@@ -83,6 +91,17 @@ class ClickSendChannel {
         }
 
         return $result;
+    }
+
+    public function checkPrefix($to)
+    {
+        if (! empty($this->prefix)) {
+            if (substr($to, 0, strlen($this->prefix)) !== $this->prefix) {
+                return $this->prefix . $to;
+            }
+        }
+
+        return $to;
     }
 
 }

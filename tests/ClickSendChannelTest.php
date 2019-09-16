@@ -35,7 +35,10 @@ class ClickSendChannelTest extends MockeryTestCase {
             return new Dispatcher( $app );
         } );
         $app->singleton( 'config', function () {
-            return new Repository( ['clicksend.enabled' => true] );
+            return new Repository( [
+                'clicksend.enabled' => true,
+                'clicksend.prefix' => '',
+            ] );
         } );
 
         $api           = Mockery::mock( SMSApi::class );
@@ -74,6 +77,26 @@ class ClickSendChannelTest extends MockeryTestCase {
                   ->andThrow( CouldNotSendNotification::class );
 
         $this->channel->send( new TestNotifiableWithoutRouteNotificationFor(), new TestNotification() );
+    }
+
+    /**
+     * @test
+     * @covers \NotificationChannels\ClickSend\ClickSendChannel::checkPrefix
+     */
+    public function prefix_where_to_already_has_the_prefix()
+    {
+        $this->channel->prefix = '+1';
+        $this->assertEquals('+1234567890', $this->channel->checkPrefix('+1234567890'));
+    }
+
+    /**
+     * @test
+     * @covers \NotificationChannels\ClickSend\ClickSendChannel::checkPrefix
+     */
+    public function prefix_where_to_does_not_have_the_prefix()
+    {
+        $this->channel->prefix = '+1';
+        $this->assertEquals('+1234567890', $this->channel->checkPrefix('234567890'));
     }
 }
 
