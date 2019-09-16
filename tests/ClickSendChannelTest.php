@@ -122,4 +122,9 @@ class TestNotification extends Notification {
     {
         return new ClickSendMessage('to', 'message', 'from');
     }
+
+    public function getMessage($message)
+    {
+        return (is_string($message)) ? $message : '';
+    }
 }

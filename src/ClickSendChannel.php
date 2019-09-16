@@ -65,12 +65,11 @@ class ClickSendChannel {
 
         $to = $this->checkPrefix($to);
 
-        /** @noinspection PhpUndefinedMethodInspection */
-        $message = $notification->toClickSend( $notifiable );
+        $message = $this->getMessage($notifiable, $notification);
 
-        if (is_string($message)) {
-            $message = new ClickSendMessage($to, $message);
-        }
+        $message = new ClickSendMessage($to, $message);
+
+        $message = $this->updateClickSendMessage($message, $notification);
 
         try {
             $result = $this->client->sendSms($message);
@@ -97,6 +96,41 @@ class ClickSendChannel {
         }
 
         return $result;
+    }
+
+    /**
+     * @param $notifiable
+     * @param \Illuminate\Notifications\Notification $notification
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getMessage($notifiable, Notification $notification)
+    {
+        if (! method_exists($notification, 'getMessage')) {
+            throw new \Exception('The method getMessage() does not exists on ' . get_class($notification));
+        }
+
+        $message = $notification->getMessage($notifiable);
+
+        if (! is_string($message)) {
+            throw new \Exception('getMessage() on ' . get_class($notification) . ' did not return string');
+        }
+
+        return $message;
+    }
+
+    /**
+     * @param \NotificationChannels\ClickSend\ClickSendMessage $message
+     * @param \Illuminate\Notifications\Notification $notification
+     * @return ClickSendMessage
+     */
+    public function updateClickSendMessage(ClickSendMessage $message, Notification $notification): ClickSendMessage
+    {
+        if (! method_exists($notification, 'updateClickSendMessage')) {
+            return $message;
+        }
+
+        return $notification->updateClickSendMessage($message);
     }
 
     /**

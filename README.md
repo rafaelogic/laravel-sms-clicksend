@@ -64,22 +64,31 @@ class ClickSendTest extends Notification
     {
         $this->token = $token;
     }
-
+    
+    /**
+     * Required
+     */
     public function via($notifiable)
     {
         return [ClickSendChannel::class];
     }
 
-    public function toClickSend($notifiable)
+    /**
+     * Required
+     */
+    public function getMessage($notifiable)
+    {  	
+       	return "SMS test to user #{$notifiable->id} with token {$this->token} by ClickSend";
+    }
+    
+    /**
+     * Optional
+     */
+    public function updateClickSendMessage($message)
     {
-        $message = new ClickSendMessage("SMS test to user #{$notifiable->id} with token {$this->token} by ClickSend");
-        
-       	// available methods:
-       	
-       	$message->content("SMS test to user #{$notifiable->id} with token {$this->token} by ClickSend");
-       	$message->from('+6112345678'); // override sms_from from config
-       	
-       	return $message;
+        $message->setFrom('+15555555555');
+
+        return $message;
     }
 }
 ```
