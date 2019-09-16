@@ -41,42 +41,42 @@ class ClickSendChannelTest extends MockeryTestCase {
             ] );
         } );
 
-        $api           = Mockery::mock( SMSApi::class );
-        $this->api     = Mockery::mock( ClickSendApi::class, [ $api, 'from' ] );
-        $this->channel = new ClickSendChannel( $this->api, $app->make( 'events' ), $app->make( 'config' ) );
+        $api           = Mockery::mock(SMSApi::class);
+        $this->api     = Mockery::mock(ClickSendApi::class, [$api, 'from']);
+        $this->channel = new ClickSendChannel( $this->api, $app->make('events'), $app->make('config'));
     }
 
     /**
      * @throws CouldNotSendNotification
      */
     public function testChannelCallsApi() {
-        $this->expectException( CouldNotSendNotification::class );
+        $this->expectException(CouldNotSendNotification::class);
 
-        $this->api->shouldReceive( 'sendSms' )
+        $this->api->shouldReceive('sendSms')
                   ->once()
-                  ->withArgs( function ( $arg ) {
-                      if ( $arg instanceof ClickSendMessage ) {
+                  ->withArgs(function ($arg) {
+                      if ($arg instanceof ClickSendMessage) {
                           return true;
                       }
 
                       return false;
                   } );
 
-        $this->channel->send( new TestNotifiable(), new TestNotification() );
+        $this->channel->send(new TestNotifiable(), new TestNotification());
     }
 
     /**
      * @throws CouldNotSendNotification
      */
     public function testDoesNotSendSmsWhenMissingRecipient() {
-        $this->expectException( CouldNotSendNotification::class );
+        $this->expectException(CouldNotSendNotification::class);
 
-        $this->api->shouldReceive( 'sendSms' )
+        $this->api->shouldReceive('sendSms')
                   ->atMost()
                   ->once()
-                  ->andThrow( CouldNotSendNotification::class );
+                  ->andThrow(CouldNotSendNotification::class);
 
-        $this->channel->send( new TestNotifiableWithoutRouteNotificationFor(), new TestNotification() );
+        $this->channel->send(new TestNotifiableWithoutRouteNotificationFor(), new TestNotification());
     }
 
     /**
@@ -114,6 +114,6 @@ class TestNotifiableWithoutRouteNotificationFor extends TestNotifiable {
 
 class TestNotification extends Notification {
     public function toClickSend() {
-        return new ClickSendMessage( 'to', 'message', 'from' );
+        return new ClickSendMessage('to', 'message', 'from');
     }
 }

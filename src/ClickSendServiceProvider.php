@@ -22,7 +22,10 @@ class ClickSendServiceProvider extends ServiceProvider {
             __DIR__.'/../config/clicksend.php' => config_path('clicksend.php'),
         ], 'config');
 
-        $this->mergeConfigFrom(__DIR__.'/../config/clicksend.php', 'clicksend');
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/clicksend.php',
+            'clicksend'
+        );
     }
 
     public function register() {

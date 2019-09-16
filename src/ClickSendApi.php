@@ -19,7 +19,9 @@ class ClickSendApi {
      */
     private $api;
 
-    /** @var string - default from config */
+    /**
+     * @var string - default from config
+     */
     protected $sms_from;
 
     /**
@@ -35,18 +37,17 @@ class ClickSendApi {
 
     /**
      * @param ClickSendMessage $message
-     *
      * @return array
      * @throws CouldNotSendNotification
      */
-    public function sendSms( ClickSendMessage $message ) {
+    public function sendSms(ClickSendMessage $message) {
         $data = [
             'from' => $message->getFrom() ?? $this->sms_from,
             'to'   => $message->getTo(),
             'body' => $message->getContent(),
         ];
 
-        $payload = new SmsMessageCollection( [ 'messages' => [ new SmsMessage( $data ) ] ] );
+        $payload = new SmsMessageCollection(['messages' => [new SmsMessage($data)]]);
 
         $result = [
             'success' => false,
@@ -55,23 +56,23 @@ class ClickSendApi {
         ];
 
         try {
-            $response = json_decode( $this->api->smsSendPost( $payload ), true );
+            $response = json_decode($this->api->smsSendPost($payload), true);
 
-            if ( $response['response_code'] != 'SUCCESS' ) {
+            if ($response['response_code'] != 'SUCCESS') {
                 // communication error
                 throw CouldNotSendNotification::clickSendErrorMessage( $response['response_msg'] );
-            } else if ( \Arr::get( $response, 'data.messages.0.status' ) != 'SUCCESS' ) {
+            } else if (\Arr::get( $response, 'data.messages.0.status' ) != 'SUCCESS') {
                 // sending error
-                throw CouldNotSendNotification::clickSendErrorMessage( \Arr::get( $response, 'data.messages.0.status' ) );
+                throw CouldNotSendNotification::clickSendErrorMessage(\Arr::get($response, 'data.messages.0.status'));
             } else {
                 $result['success'] = true;
                 $result['message'] = 'Message sent successfully.';
             }
 
         } catch ( APIException $e ) {
-            throw CouldNotSendNotification::clickSendApiException( $e );
+            throw CouldNotSendNotification::clickSendApiException($e);
         } catch ( \Throwable $e ) {
-            throw CouldNotSendNotification::genericError( $e );
+            throw CouldNotSendNotification::genericError($e);
         }
 
         return $result;

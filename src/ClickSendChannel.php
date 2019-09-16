@@ -9,10 +9,14 @@ use Illuminate\Notifications\Events\NotificationFailed;
 use NotificationChannels\ClickSend\Exceptions\CouldNotSendNotification;
 
 class ClickSendChannel {
-    /** @var \NotificationChannels\ClickSend\ClickSendApi */
+    /**
+     * @var \NotificationChannels\ClickSend\ClickSendApi
+     */
     protected $client;
 
-    /** @var Dispatcher */
+    /**
+     * @var Dispatcher
+     */
     protected $events;
 
     /**
@@ -32,7 +36,7 @@ class ClickSendChannel {
      * @param Dispatcher $events
      * @param $config
      */
-    public function __construct( ClickSendApi $client, Dispatcher $events, Repository $config ) {
+    public function __construct(ClickSendApi $client, Dispatcher $events, Repository $config) {
         $this->client = $client;
         $this->events = $events;
         $this->enabled = $config['clicksend.enabled'];
@@ -46,14 +50,14 @@ class ClickSendChannel {
      * @return array|mixed
      * @throws CouldNotSendNotification
      */
-    public function send( $notifiable, Notification $notification ) {
+    public function send($notifiable, Notification $notification) {
         if (! $this->enabled) {
             return [];
         }
 
         $to = $notifiable->routeNotificationForClicksend();
 
-        if ( !$to ) {
+        if (! $to) {
             throw CouldNotSendNotification::missingRecipient();
         }
 
@@ -62,18 +66,18 @@ class ClickSendChannel {
         /** @noinspection PhpUndefinedMethodInspection */
         $message = $notification->toClickSend( $notifiable );
 
-        if ( is_string( $message ) ) {
-            $message = new ClickSendMessage( $to, $message );
+        if (is_string($message)) {
+            $message = new ClickSendMessage($to, $message);
         }
 
         try {
-            $result = $this->client->sendSms( $message );
-        } catch ( Exceptions\CouldNotSendNotification $e ) {
+            $result = $this->client->sendSms($message);
+        } catch (Exceptions\CouldNotSendNotification $e) {
             $this->events->dispatch(
-                new NotificationFailed( $notifiable, $notification, get_class( $this ), [
+                new NotificationFailed($notifiable, $notification, get_class($this), [
                     'success' => false,
                     'message' => $e->getMessage(),
-                    'data'    => []
+                    'data'    => [],
                 ] )
             );
 
@@ -81,18 +85,22 @@ class ClickSendChannel {
             throw $e;
         }
 
-        if ( empty( $result['success'] ) || !$result['success'] ) {
+        if (empty($result['success']) || ! $result['success']) {
             $this->events->dispatch(
-                new NotificationFailed( $notifiable, $notification, get_class( $this ), $result )
+                new NotificationFailed($notifiable, $notification, get_class($this), $result)
             );
 
             // by throwing exception NotificationSent event is not triggered and we trigger NotificationFailed above instead
-            throw CouldNotSendNotification::clickSendErrorMessage( $result['message'] );
+            throw CouldNotSendNotification::clickSendErrorMessage($result['message']);
         }
 
         return $result;
     }
 
+    /**
+     * @param string $to
+     * @return string
+     */
     public function checkPrefix($to)
     {
         if (! empty($this->prefix)) {

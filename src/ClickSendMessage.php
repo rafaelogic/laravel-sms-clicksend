@@ -45,7 +45,7 @@ class ClickSendMessage {
      *
      * @return ClickSendMessage
      */
-    public function setFrom( string $from ): ClickSendMessage {
+    public function setFrom(string $from): ClickSendMessage {
         $this->from = $from;
 
         return $this;
@@ -63,7 +63,7 @@ class ClickSendMessage {
      *
      * @return ClickSendMessage
      */
-    public function setTo( string $to ): ClickSendMessage {
+    public function setTo(string $to): ClickSendMessage {
         $this->to = $to;
 
         return $this;
@@ -81,7 +81,7 @@ class ClickSendMessage {
      *
      * @return ClickSendMessage
      */
-    public function setContent( string $content ): ClickSendMessage {
+    public function setContent(string $content): ClickSendMessage {
         $this->content = $content;
 
         return $this;
