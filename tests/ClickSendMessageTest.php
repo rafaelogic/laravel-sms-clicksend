@@ -5,7 +5,8 @@ namespace NotificationChannels\ClickSend\Test;
 use NotificationChannels\ClickSend\ClickSendMessage;
 use PHPUnit\Framework\TestCase;
 
-class ClickSendMessageTest extends TestCase {
+class ClickSendMessageTest extends TestCase
+{
     public function testCreateInstance()
     {
         $message = new ClickSendMessage('to', 'message', 'from');

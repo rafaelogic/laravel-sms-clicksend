@@ -1,6 +1,5 @@
 <?php
 
-
 namespace NotificationChannels\ClickSend;
 
 use ClickSend\Api\SMSApi;
@@ -9,13 +8,13 @@ use ClickSend\Model\SmsMessage;
 use ClickSend\Model\SmsMessageCollection;
 use NotificationChannels\ClickSend\Exceptions\CouldNotSendNotification;
 
-
 /**
  * Click Send API using ClickSend API wrapper
  *
  * @url https://github.com/ClickSend/clicksend-php
  */
-class ClickSendApi {
+class ClickSendApi
+{
     /**
      * @var SMSApi
      */
@@ -64,18 +63,17 @@ class ClickSendApi {
 
             if ($response['response_code'] != 'SUCCESS') {
                 // communication error
-                throw CouldNotSendNotification::clickSendErrorMessage( $response['response_msg'] );
-            } else if (\Arr::get( $response, 'data.messages.0.status' ) != 'SUCCESS') {
+                throw CouldNotSendNotification::clickSendErrorMessage($response['response_msg']);
+            } elseif (\Arr::get($response, 'data.messages.0.status') != 'SUCCESS') {
                 // sending error
                 throw CouldNotSendNotification::clickSendErrorMessage(\Arr::get($response, 'data.messages.0.status'));
             } else {
                 $result['success'] = true;
                 $result['message'] = 'Message sent successfully.';
             }
-
-        } catch ( APIException $e ) {
+        } catch (APIException $e) {
             throw CouldNotSendNotification::clickSendApiException($e);
-        } catch ( \Throwable $e ) {
+        } catch (\Throwable $e) {
             throw CouldNotSendNotification::genericError($e);
         }
 
@@ -92,5 +90,4 @@ class ClickSendApi {
     {
         return $this->api;
     }
-
 }

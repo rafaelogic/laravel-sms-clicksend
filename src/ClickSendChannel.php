@@ -2,13 +2,14 @@
 
 namespace NotificationChannels\ClickSend;
 
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Config\Repository;
-use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Notifications\Events\NotificationFailed;
+use Illuminate\Notifications\Notification;
 use NotificationChannels\ClickSend\Exceptions\CouldNotSendNotification;
 
-class ClickSendChannel {
+class ClickSendChannel
+{
     /**
      * @var \NotificationChannels\ClickSend\ClickSendApi
      */
@@ -79,7 +80,7 @@ class ClickSendChannel {
                     'success' => false,
                     'message' => $e->getMessage(),
                     'data'    => [],
-                ] )
+                ])
             );
 
             // by throwing exception NotificationSent event is not triggered and we trigger NotificationFailed above instead
@@ -147,5 +148,4 @@ class ClickSendChannel {
 
         return $to;
     }
-
 }

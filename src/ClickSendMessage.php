@@ -2,7 +2,8 @@
 
 namespace NotificationChannels\ClickSend;
 
-class ClickSendMessage {
+class ClickSendMessage
+{
     /**
      * The phone number the message should be sent from.
      *
@@ -57,7 +58,8 @@ class ClickSendMessage {
     /**
      * @return string
      */
-    public function getTo(): string {
+    public function getTo(): string
+    {
         return $this->to;
     }
 

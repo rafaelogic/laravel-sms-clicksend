@@ -8,7 +8,8 @@ use GuzzleHttp\Client;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 
-class ClickSendServiceProvider extends ServiceProvider {
+class ClickSendServiceProvider extends ServiceProvider
+{
     /**
      * Indicates if loading of the provider is deferred.
      *
@@ -38,15 +39,15 @@ class ClickSendServiceProvider extends ServiceProvider {
     {
         $this->app->singleton(SMSApi::class, function () {
             $configuration = Configuration::getDefaultConfiguration()
-                                          ->setUsername($this->app['config']['clicksend.user_name'])
-                                          ->setPassword($this->app['config']['clicksend.api_key']);
+                ->setUsername($this->app['config']['clicksend.user_name'])
+                ->setPassword($this->app['config']['clicksend.api_key']);
 
             return new SMSApi(new Client(), $configuration);
-        } );
+        });
 
-        $this->app->singleton( ClickSendApi::class, function (Application $app) {
+        $this->app->singleton(ClickSendApi::class, function (Application $app) {
             return new ClickSendApi($app->make(SMSApi::class), $this->app['config']['clicksend.sms_from']);
-        } );
+        });
     }
 
     /**
