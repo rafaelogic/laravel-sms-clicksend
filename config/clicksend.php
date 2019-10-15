@@ -1,6 +1,11 @@
 <?php
 
 return [
+    /**
+     * clicksend or log
+     */
+    'driver' => env('CLICKSEND_DRIVER', 'clicksend'),
+
     /*
      * If set to false this will be disabled
      */

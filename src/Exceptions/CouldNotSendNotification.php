@@ -75,4 +75,16 @@ class CouldNotSendNotification extends \Exception
             $error
         ));
     }
+
+    /**
+     * @param string $driver
+     * @return CouldNotSendNotification
+     */
+    public static function driverError(string $driver)
+    {
+        return new static(sprintf(
+            'Invalid driver (%s)',
+            $driver
+        ));
+    }
 }

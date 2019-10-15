@@ -40,11 +40,12 @@ class ClickSendChannelTest extends MockeryTestCase
             return new Repository([
                 'clicksend.enabled' => true,
                 'clicksend.prefix'  => '',
+                'clicksend.drvier'  => 'clicksend',
             ]);
         });
 
         $api           = Mockery::mock(SMSApi::class);
-        $this->api     = Mockery::mock(ClickSendApi::class, [$api, 'from']);
+        $this->api     = Mockery::mock(ClickSendApi::class, [$api, 'from', 'clicksend']);
         $this->channel = new ClickSendChannel($this->api, $app->make('events'), $app->make('config'));
     }
 
@@ -81,6 +82,16 @@ class ClickSendChannelTest extends MockeryTestCase
             ->andThrow(CouldNotSendNotification::class);
 
         $this->channel->send(new TestNotifiableWithoutRouteNotificationFor(), new TestNotification());
+    }
+
+    /**
+     * @throws CouldNotSendNotification
+     */
+    public function testBadDriver()
+    {
+        $this->expectException(CouldNotSendNotification::class);
+
+        Mockery::mock(ClickSendApi::class, [Mockery::mock(SMSApi::class), 'from', 'bad']);
     }
 
     /**

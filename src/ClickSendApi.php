@@ -6,6 +6,7 @@ use ClickSend\Api\SMSApi;
 use ClickSend\ApiException;
 use ClickSend\Model\SmsMessage;
 use ClickSend\Model\SmsMessageCollection;
+use Illuminate\Support\Facades\Log;
 use NotificationChannels\ClickSend\Exceptions\CouldNotSendNotification;
 
 /**
@@ -15,6 +16,11 @@ use NotificationChannels\ClickSend\Exceptions\CouldNotSendNotification;
  */
 class ClickSendApi
 {
+    /**
+     * @var string
+     */
+    public $driver;
+
     /**
      * @var SMSApi
      */
@@ -30,11 +36,18 @@ class ClickSendApi
      *
      * @param SMSApi $api
      * @param        $sms_from
+     * @param $driver
      */
-    public function __construct(SMSApi $api, $sms_from)
+    public function __construct(SMSApi $api, $sms_from, $driver)
     {
         $this->api      = $api;
         $this->sms_from = $sms_from;
+
+        if ($driver !== 'clicksend' && $driver !== 'log') {
+            throw CouldNotSendNotification::driverError($driver);
+        }
+
+        $this->driver = $driver;
     }
 
     /**
@@ -50,13 +63,24 @@ class ClickSendApi
             'body' => $message->getContent(),
         ];
 
-        $payload = new SmsMessageCollection(['messages' => [new SmsMessage($data)]]);
-
         $result = [
             'success' => false,
             'message' => '',
             'data'    => $data,
         ];
+
+        $payload = new SmsMessageCollection(['messages' => [new SmsMessage($data)]]);
+
+        if ($this->driver === 'log') {
+            Log::debug('ClickSend SMS', [
+                'data'    => $data,
+                'payload' => $payload,
+            ]);
+            $result['success'] = true;
+            $result['message'] = 'Message sent successfully.';
+
+            return $result;
+        }
 
         try {
             $response = json_decode($this->api->smsSendPost($payload), true);
