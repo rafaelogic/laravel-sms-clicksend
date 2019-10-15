@@ -1,4 +1,4 @@
-# ClickSend notifications channel for Laravel 5.6+
+# ClickSend notifications channel for Laravel 5.8 / 6.*
 
 This package makes it easy to send notifications using [clicksend.com](//clicksend.com) with Laravel 5.6+.
 Uses ClickSend PHP API wrapper [https://github.com/ClickSend/clicksend-php]
@@ -216,6 +216,9 @@ $countries =  $client->getCountries()->getCountries();
 
 ## Config
 
+- `CLICKSEND_DRIVER`
+    - `clicksend` or `log`
+    - Setting to `log` will send the SMS message to the log file and **not** try to send it
 - `CLICKSEND_ENABLED` 
     - If set to false the channel will not run and return true.  This is good for testing
 - `CLICKSEND_USERNAME`
