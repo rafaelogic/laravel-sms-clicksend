@@ -46,7 +46,7 @@ class ClickSendServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(ClickSendApi::class, function (Application $app) {
-            return new ClickSendApi($app->make(SMSApi::class), $this->app['config']['clicksend.sms_from']);
+            return new ClickSendApi($app->make(SMSApi::class), $this->app['config']['clicksend.sms_from'], $this->app['config']['clicksend.driver']);
         });
     }
 
